@@ -1,3 +1,3 @@
 # premiumplanner
-premium travel planner (minor project)
-Initial project upload
+#premium travel planner (minor project)
+#Initial project upload
