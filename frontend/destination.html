@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Plan Your Trip</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+<h2>🌍 Premium Travel Planner</h2>
+
+<ul>
+
+<li><a href="home.html">Home</a></li>
+
+<li><a href="destination.html">Plan Trip</a></li>
+<li>
+<select id="language" onchange="changeTripLanguage()">
+    <option value="en">English</option>
+    <option value="hi">हिन्दी</option>
+    <option value="mr">मराठी</option>
+</select>
+</li>
+<li><a href="#about">About</a></li>
+
+<li><a href="#contact">Contact</a></li>
+
+<li><a href="login.html">Logout</a></li>
+
+</ul>
+
+</nav>
+
+<section class="trip-form">
+
+<h1 id="tripTitle">✈ Plan Your Dream Trip</h1>
+<form>
+
+<label id="sourceLabel">Source City</label>
+
+<input type="text" placeholder="Enter Source City">
+
+<label id="destinationLabel">Destination City</label>
+
+<input type="text" placeholder="Enter Destination City">
+
+<label id="startLabel">Start Date</label>
+
+<input type="date">
+
+<label id="endLabel">End Date</label>
+<input type="date">
+
+<label id="budgetLabel">Budget (₹)</label>
+<input type="number" placeholder="Enter Budget">
+
+<label id="travelerLabel">Number of Travelers</label>
+
+<input type="number" placeholder="Enter Number of Travelers">
+
+<label id="interestLabel">Travel Interest</label>
+
+<select>
+
+<option>Adventure</option>
+
+<option>Beach</option>
+
+<option>Hill Station</option>
+
+<option>Religious</option>
+
+<option>Historical</option>
+
+<option>Wildlife</option>
+
+</select>
+
+<label id="transportLabel">Transport</label>
+<select>
+
+<option>Flight</option>
+
+<option>Train</option>
+
+<option>Bus</option>
+
+<option>Cab</option>
+
+</select>
+
+<label id="hotelLabel">Hotel Preference</label>
+
+<select>
+
+<option>⭐⭐⭐ 3 Star</option>
+
+<option>⭐⭐⭐⭐ 4 Star</option>
+
+<option>⭐⭐⭐⭐⭐ 5 Star</option>
+
+</select>
+
+<br><br>
+
+<a href="result.html">
+
+<button type="button" id="generateBtn">
+Generate AI Itinerary
+</button>
+
+</a>
+
+</form>
+
+</section>
+<script src="script.js"></script>
+</body>
+
+</html>

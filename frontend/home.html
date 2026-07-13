@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Premium Travel Planner - Home</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <h2>🌍 Premium Travel Planner</h2>
+
+    <ul>
+
+<li><a href="home.html">Home</a></li>
+
+<li><a href="destination.html">Plan Trip</a></li>
+
+<li>
+<select id="language" onchange="changeLanguage()">
+<option value="en">English</option>
+<option value="hi">हिन्दी</option>
+<option value="mr">मराठी</option>
+</select>
+</li>
+
+<li><a href="about.html">About</a></li>
+<li><a href="#contact">Contact</a></li>
+
+<li><a href="login.html">Logout</a></li>
+
+</ul>
+
+</nav>
+
+<section class="hero-home">
+
+    <div class="hero-text">
+
+        <h1 id="welcomeText">Welcome Traveller 👋</h1>
+
+        <p id="tagline">Plan your dream vacation with AI.</p>
+
+        <a href="destination.html">
+
+            <button id="startBtn">Start Planning</button>
+
+        </a>
+
+    </div>
+
+</section>
+
+<section class="services">
+
+<a href="attractions.html" class="service-box">
+    <h3 id="tourTitle">🧳 Tourist Attractions</h3>
+    <p id="tourText">Discover famous tourist places.</p>
+</a>
+
+<a href="hotels.html" class="service-box">
+    <h3 id="hotelTitle">🏨 Hotels</h3>
+    <p id="hotelText">Find the best hotels within your budget.</p>
+</a>
+
+<a href="transport.html" class="service-box">
+    <h3 id="transportTitle">🚌 Transport</h3>
+    <p id="transportText">Get transport recommendations.</p>
+</a>
+
+</section>
+
+<footer>
+
+<p>© 2026 Premium Travel Planner | AI Based Travel Planner</p>
+
+</footer>
+<script src="script.js"></script>
+</body>
+
+</html>
