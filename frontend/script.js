@@ -1,21 +1,33 @@
 // ================= LOGIN =================
 
-function login(){
+async function login() {
 
-    let username=document.getElementById("username").value;
-    let password=document.getElementById("password").value;
+    let email = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
 
-    if(username=="admin" && password=="1234"){
+    let response = await fetch("/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: email,
+            password: password
+        })
+    });
+
+    let result = await response.json();
+
+    if (result.success) {
 
         alert("Login Successful");
 
-        window.location.href="home.html";
+        window.location.href = "home.html";
 
-    }
+    } else {
 
-    else{
-
-        document.getElementById("message").innerHTML="Invalid User ID or Password";
+        document.getElementById("message").innerHTML =
+            "Invalid Email or Password";
 
     }
 
@@ -23,43 +35,55 @@ function login(){
 
 
 // ================= REGISTER =================
+async function registerUser() {
 
-function registerUser(){
+    let fullname = document.getElementById("fullname").value;
+    let email = document.getElementById("email").value;
+    let mobile = document.getElementById("mobile").value;
+    let password = document.getElementById("password").value;
+    let confirmPassword = document.getElementById("confirmPassword").value;
 
-    let fullname=document.getElementById("fullname").value;
-
-    let email=document.getElementById("email").value;
-
-    let mobile=document.getElementById("mobile").value;
-
-    let password=document.getElementById("password").value;
-
-    let confirmPassword=document.getElementById("confirmPassword").value;
-
-
-    if(fullname=="" || email=="" || mobile=="" || password=="" || confirmPassword==""){
-
+    if (fullname == "" || email == "" || mobile == "" || password == "" || confirmPassword == "") {
         alert("Please fill all fields.");
-
         return;
-
     }
 
-
-    if(password!=confirmPassword){
-
+    if (password != confirmPassword) {
         alert("Passwords do not match.");
-
         return;
-
     }
 
+    let response = await fetch("/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            fullname: fullname,
+            email: email,
+            mobile: mobile,
+            password: password
+        })
+    });
 
-    alert("Registration Successful!");
+    let result = await response.json();
 
-    window.location.href="login.html";
+    if (result.success) {
+
+        alert("Registration Successful!");
+
+        window.location.href = "login.html";
+
+    } else {
+
+        alert(result.message);
+
+    }
 
 }
+
+
+        
 function changeLanguage() {
 
     let lang = document.getElementById("language").value;
@@ -163,6 +187,63 @@ document.getElementById("interestLabel").innerHTML="प्रवासाची 
 document.getElementById("transportLabel").innerHTML="वाहतूक";
 document.getElementById("hotelLabel").innerHTML="हॉटेल पसंती";
 document.getElementById("generateBtn").innerHTML="AI सहल योजना तयार करा";
+
+}
+
+}
+function generateTrip(){
+
+let source=document.getElementById("source").value;
+let destination=document.getElementById("destination").value;
+
+if(source=="" || destination==""){
+
+alert("Please fill Source and Destination");
+
+return;
+
+}
+
+window.location.href="itinerary.html";
+
+}
+window.onload=function(){
+
+if(window.location.pathname.includes("itinerary.html")){
+
+document.getElementById("hotelResult").innerHTML=`
+<ul>
+<li>⭐⭐⭐⭐ Taj Hotel</li>
+<li>⭐⭐⭐⭐ Radisson Blu</li>
+<li>⭐⭐⭐ Lemon Tree</li>
+</ul>
+`;
+
+document.getElementById("placeResult").innerHTML=`
+<ul>
+<li>Gateway of India</li>
+<li>Marine Drive</li>
+<li>Juhu Beach</li>
+<li>Elephanta Caves</li>
+</ul>
+`;
+
+document.getElementById("budgetResult").innerHTML="₹18,000";
+
+document.getElementById("itineraryResult").innerHTML=`
+<b>Day 1</b><br>
+Hotel Check-in<br>
+Marine Drive Sunset<br><br>
+
+<b>Day 2</b><br>
+Gateway of India<br>
+Elephanta Caves<br><br>
+
+<b>Day 3</b><br>
+Juhu Beach<br>
+Shopping<br>
+Return Home
+`;
 
 }
 

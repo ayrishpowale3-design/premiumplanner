@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Plan Trip</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="plantrip-page">
+
+<nav class="navbar">
+    <h2>🌍 Premium Travel Planner</h2>
+
+    <ul>
+        <li><a href="home.html">Home</a></li>
+
+        <li>
+            <select id="language">
+                <option>English</option>
+                <option>हिन्दी</option>
+                <option>मराठी</option>
+            </select>
+        </li>
+
+        <li><a href="login.html">Logout</a></li>
+    </ul>
+</nav>
+
+<div class="trip-container">
+
+    <h1>✈ Plan Your Dream Trip</h1>
+
+    <label>Source City</label>
+    <input type="text" id="source">
+
+    <label>Destination City</label>
+    <input type="text" id="destination">
+
+    <label>Start Date</label>
+    <input type="date" id="startDate">
+
+    <label>End Date</label>
+    <input type="date" id="endDate">
+
+    <label>Budget (₹)</label>
+    <input type="number" id="budget">
+
+    <label>Number of Travellers</label>
+    <input type="number" id="travellers">
+
+    <label>Travel Interest</label>
+    <select id="interest">
+        <option>Adventure</option>
+        <option>Beach</option>
+        <option>Nature</option>
+        <option>Religious</option>
+    </select>
+
+    <label>Transport</label>
+    <select id="transport">
+        <option>Flight</option>
+        <option>Train</option>
+        <option>Bus</option>
+        <option>Car</option>
+    </select>
+
+    <label>Hotel Preference</label>
+    <select id="hotel">
+        <option>Budget</option>
+        <option>3 Star</option>
+        <option>4 Star</option>
+        <option>5 Star</option>
+    </select>
+
+    <button onclick="generateTrip()">
+        Generate AI Itinerary
+    </button>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
