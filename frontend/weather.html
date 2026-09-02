@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Weather - Premium Travel Planner</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+      .weather-container {
+        max-width: 800px;
+        margin: 60px auto;
+        padding: 40px;
+        text-align: center;
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .weather-container h1 {
+        font-size: 35px;
+        margin-bottom: 10px;
+      }
+
+      .weather-container > p {
+        font-size: 17px;
+        margin-bottom: 30px;
+      }
+
+      .weather-search {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .weather-search input {
+        width: 60%;
+        min-width: 250px;
+        padding: 15px 18px;
+        border: none;
+        border-radius: 12px;
+        outline: none;
+        font-size: 16px;
+        font-family: "Poppins", sans-serif;
+      }
+
+      .weather-search button {
+        padding: 15px 25px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        background: #2196f3;
+        color: white;
+        font-size: 16px;
+        font-family: "Poppins", sans-serif;
+        transition: 0.3s;
+      }
+
+      .weather-search button:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+      }
+
+      .weather-result {
+        margin-top: 35px;
+        padding: 25px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.2);
+        min-height: 120px;
+      }
+
+      .weather-result h2 {
+        margin-bottom: 15px;
+      }
+
+      .weather-result p {
+        font-size: 17px;
+        margin: 10px;
+      }
+
+      .weather-icon {
+        font-size: 50px;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- NAVIGATION -->
+
+    <nav class="navbar">
+      <h2>🌍 Premium Travel Planner</h2>
+
+      <ul>
+        <li>
+          <a href="home.html">Home</a>
+        </li>
+
+        <li>
+          <a href="plantrip.html">Plan Trip</a>
+        </li>
+
+        <li>
+          <a href="mytrips.html">📁 My Trips</a>
+        </li>
+
+        <li>
+          <a href="maps.html">🗺️ Maps</a>
+        </li>
+
+        <li>
+          <a href="weather.html">🌦️ Weather</a>
+        </li>
+
+        <li>
+          <a href="about.html">About</a>
+        </li>
+
+        <li>
+          <a href="contact.html">Contact</a>
+        </li>
+
+        <li>
+          <a href="login.html">Logout</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- WEATHER SECTION -->
+
+    <section class="weather-container">
+      <h1>🌦️ Travel Weather</h1>
+
+      <p>Check the weather before you start your journey.</p>
+
+      <!-- SEARCH -->
+
+      <div class="weather-search">
+        <input
+          type="text"
+          id="cityInput"
+          placeholder="Enter city name e.g. Mumbai"
+        />
+
+        <button onclick="getWeather()">🔍 Check Weather</button>
+      </div>
+
+      <!-- WEATHER RESULT -->
+
+      <div id="weatherResult" class="weather-result">
+        <div class="weather-icon">🌍</div>
+
+        <h2>Search for a destination</h2>
+
+        <p>Enter a city above to see its weather.</p>
+      </div>
+    </section>
+
+    <!-- WEATHER JAVASCRIPT -->
+
+    <script>
+  async function getWeather() {
+    const city = document.getElementById("cityInput").value.trim();
+    const result = document.getElementById("weatherResult");
+
+    // Check empty input
+    if (!city) {
+      result.innerHTML = `
+        <div class="weather-icon">⚠️</div>
+        <h2>Please enter a city</h2>
+        <p>Enter a destination to check its weather.</p>
+      `;
+      return;
+    }
+
+    // Loading message
+    result.innerHTML = `
+      <div class="weather-icon">⏳</div>
+      <h2>Loading weather...</h2>
+      <p>Please wait while we get the latest weather information.</p>
+    `;
+
+    try {
+      // IMPORTANT: Correct Flask API URL
+      const response = await fetch(
+        `/api/weather?city=${encodeURIComponent(city)}`
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Weather not found");
+      }
+
+      // Get data from Flask response
+      const location = data.location;
+      const current = data.current;
+
+      // Convert Open-Meteo weather codes to readable condition
+      function getCondition(code) {
+        if (code === 0) return "Clear sky";
+        if ([1, 2, 3].includes(code)) return "Partly cloudy";
+        if ([45, 48].includes(code)) return "Foggy";
+        if ([51, 53, 55].includes(code)) return "Drizzle";
+        if ([56, 57].includes(code)) return "Freezing drizzle";
+        if ([61, 63, 65].includes(code)) return "Rain";
+        if ([66, 67].includes(code)) return "Freezing rain";
+        if ([71, 73, 75, 77].includes(code)) return "Snow";
+        if ([80, 81, 82].includes(code)) return "Rain showers";
+        if ([85, 86].includes(code)) return "Snow showers";
+        if ([95, 96, 99].includes(code)) return "Thunderstorm";
+
+        return "Unknown";
+      }
+
+      const condition = getCondition(current.weather_code);
+
+      result.innerHTML = `
+        <div class="weather-icon">🌤️</div>
+
+        <h2>
+          📍 ${location.city}, ${location.country}
+        </h2>
+
+        <p>
+          🌡️ Temperature:
+          <strong>${current.temperature}°C</strong>
+        </p>
+
+        <p>
+          🤒 Feels Like:
+          <strong>${current.feels_like}°C</strong>
+        </p>
+
+        <p>
+          ☁️ Condition:
+          <strong>${condition}</strong>
+        </p>
+
+        <p>
+          💧 Humidity:
+          <strong>${current.humidity}%</strong>
+        </p>
+
+        <p>
+          💨 Wind Speed:
+          <strong>${current.wind_speed} km/h</strong>
+        </p>
+
+        <p>
+          🌧️ Precipitation:
+          <strong>${current.precipitation} mm</strong>
+        </p>
+      `;
+
+    } catch (error) {
+      console.error("Weather Error:", error);
+
+      result.innerHTML = `
+        <div class="weather-icon">❌</div>
+
+        <h2>Connection Error</h2>
+
+        <p>
+          Unable to connect to the weather service.
+        </p>
+
+        <p style="font-size: 14px; opacity: 0.7;">
+          ${error.message}
+        </p>
+      `;
+    }
+  }
+</script>
+  </body>
+</html>

@@ -1,49 +1,56 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Travel Itinerary</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Premium Travel Planner</title>
 
-<link rel="stylesheet" href="style.css">
-</head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
 
-<body class="plantrip-page">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-<div class="trip-container">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
-<h1>🌍 Your AI Travel Plan</h1>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<h3>🏨 Recommended Hotels</h3>
-<div id="hotelResult"></div>
+  <body class="plantrip-page">
+    <div class="trip-container">
+      <h1>🌍 Your AI Travel Plan</h1>
 
-<hr>
+      <h3>🏨 Recommended Hotels</h3>
+      <div id="hotelResult"></div>
 
-<h3>📍 Tourist Attractions</h3>
-<div id="placeResult"></div>
+      <hr />
 
-<hr>
+      <h3>📍 Tourist Attractions</h3>
+      <div id="placeResult"></div>
 
-<h3>💰 Estimated Budget</h3>
-<h2 id="budgetResult">₹0</h2>
+      <hr />
 
-<hr>
+      <h3>💰 Estimated Budget</h3>
+      <h2 id="budgetResult">₹0</h2>
 
-<h3>📝 Suggested Itinerary</h3>
+      <hr />
 
-<div id="itineraryResult">
-Loading...
-</div>
+      <h3>📝 Suggested Itinerary</h3>
 
-<br>
+      <div id="itineraryResult">Loading...</div>
 
-<button onclick="window.location='plantrip.html'">
-⬅ Plan Another Trip
-</button>
+      <br />
 
-</div>
+      <button onclick="window.location = 'plantrip.html'">
+        ⬅ Plan Another Trip
+      </button>
+    </div>
 
-<script src="script.js"></script>
-
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>

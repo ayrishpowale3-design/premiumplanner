@@ -1,40 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Premium Travel Planner</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Premium Travel Planner</title>
 
-<body class="login-page">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
 
-<div class="login-container">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <div class="left-panel">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body class="login-page">
+    <div class="login-container">
+      <div class="left-panel">
         <h1>Premium Travel Planner</h1>
         <p>Plan your dream trip with AI.</p>
-    </div>
+      </div>
 
-    <div class="right-panel">
-
+      <div class="right-panel">
         <h2>Login</h2>
 
-        <input type="text" id="username" placeholder="User ID">
+        <input type="text" id="username" placeholder="User ID" />
 
-        <input type="password" id="password" placeholder="Password">
+        <input type="password" id="password" placeholder="Password" />
 
-       <button type="button" onclick="login()">Login</button>
+        <button type="button" onclick="login()">Login</button>
 
-<p id="message"></p>
+        <p id="message"></p>
 
-<p>Don't have an account?</p>
-<a href="register.html">Create Account</a>
+        <p>Don't have an account?</p>
+        <a href="register.html">Create Account</a>
+      </div>
     </div>
 
-</div>
-
-<script src="script.js"></script>
-
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>

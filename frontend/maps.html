@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Travel Maps - Premium Travel Planner</title>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+      .map-page {
+        min-height: 100vh;
+        padding: 40px 20px;
+        text-align: center;
+      }
+
+      .map-page h1 {
+        margin-bottom: 10px;
+        font-size: 35px;
+      }
+
+      .map-page > p {
+        margin-bottom: 20px;
+        font-size: 17px;
+      }
+
+      .map-search {
+        margin: 25px auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .map-search input {
+        width: 60%;
+        max-width: 500px;
+        min-width: 250px;
+        padding: 14px 16px;
+        border: none;
+        border-radius: 10px;
+        outline: none;
+        font-size: 16px;
+        font-family: "Poppins", sans-serif;
+        box-sizing: border-box;
+      }
+
+      .map-search button {
+        padding: 14px 22px;
+        border: none;
+        border-radius: 10px;
+        background: #2196f3;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+        font-family: "Poppins", sans-serif;
+      }
+
+      .map-search button:hover {
+        background: #1976d2;
+        transform: translateY(-2px);
+      }
+
+      #map {
+        display: block;
+        width: 90%;
+        max-width: 1100px;
+        height: 500px;
+        margin: 25px auto;
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .back-button {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        background: #555;
+        color: white;
+        font-size: 15px;
+        transition: 0.3s;
+        font-family: "Poppins", sans-serif;
+      }
+
+      .back-button:hover {
+        background: #333;
+        transform: translateY(-2px);
+      }
+
+      @media (max-width: 600px) {
+        .map-page {
+          padding: 30px 10px;
+        }
+
+        .map-page h1 {
+          font-size: 28px;
+        }
+
+        .map-search input {
+          width: 90%;
+          min-width: 0;
+        }
+
+        .map-search button {
+          width: auto;
+        }
+
+        #map {
+          width: 95%;
+          height: 400px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- MAP PAGE -->
+
+    <div class="map-page">
+      <h1>🗺️ Travel Maps</h1>
+
+      <p>Search for a destination and explore it on the map.</p>
+
+      <!-- SEARCH -->
+
+      <div class="map-search">
+        <input
+          type="text"
+          id="destination"
+          placeholder="Enter destination e.g. Mumbai"
+          autocomplete="off"
+        />
+
+        <button onclick="showMap()">🔍 Show Map</button>
+      </div>
+
+      <!-- GOOGLE MAP -->
+
+      <iframe
+        id="map"
+        src="https://www.google.com/maps?q=India&output=embed"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Travel Map"
+      ></iframe>
+
+      <br />
+
+      <!-- BACK HOME -->
+
+      <button
+        class="back-button"
+        onclick="window.location.href = 'home.html'"
+      >
+        ← Back Home
+      </button>
+    </div>
+
+    <!-- MAP JAVASCRIPT -->
+
+    <script>
+      function showMap() {
+        const destination = document
+          .getElementById("destination")
+          .value
+          .trim();
+
+        // Check empty input
+        if (!destination) {
+          alert("Please enter a destination.");
+          return;
+        }
+
+        // Create Google Maps URL
+        const mapUrl =
+          "https://www.google.com/maps?q=" +
+          encodeURIComponent(destination) +
+          "&output=embed";
+
+        // Update map
+        document.getElementById("map").src = mapUrl;
+      }
+
+      // Allow pressing ENTER to search
+      document
+        .getElementById("destination")
+        .addEventListener("keydown", function (event) {
+          if (event.key === "Enter") {
+            showMap();
+          }
+        });
+    </script>
+  </body>
+</html>

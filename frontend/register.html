@@ -1,39 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Premium Travel Planner</title>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Premium Travel Planner</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
 
-    <link rel="stylesheet" href="style.css">
-</head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-<body class="register-page">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
-<div class="register-container">
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-    <div class="left-register">
-
+  <body class="register-page">
+    <div class="register-container">
+      <div class="left-register">
         <h1>Premium Travel Planner</h1>
 
         <p>Create your account and start your journey with AI.</p>
+      </div>
 
-    </div>
-
-    <div class="right-register">
-
+      <div class="right-register">
         <h2>Create Account</h2>
 
-        <input type="text" id="fullname" placeholder="Full Name">
+        <input type="text" id="fullname" placeholder="Full Name" />
 
-        <input type="email" id="email" placeholder="Email Address">
+        <input type="email" id="email" placeholder="Email Address" />
 
-        <input type="tel" id="mobile" placeholder="Mobile Number">
+        <input type="tel" id="mobile" placeholder="Mobile Number" />
 
-        <input type="password" id="password" placeholder="Password">
+        <input type="password" id="password" placeholder="Password" />
 
-        <input type="password" id="confirmPassword" placeholder="Confirm Password">
+        <input
+          type="password"
+          id="confirmPassword"
+          placeholder="Confirm Password"
+        />
 
         <button type="button" onclick="registerUser()">Create Account</button>
 
@@ -42,12 +53,9 @@
         <p>Already have an account?</p>
 
         <a href="login.html">Login</a>
-
+      </div>
     </div>
 
-</div>
-
-<script src="script.js"></script>
-
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>

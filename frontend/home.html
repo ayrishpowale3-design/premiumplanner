@@ -1,124 +1,141 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Premium Travel Planner - Home</title>
+    <title>Premium Travel Planner</title>
 
-<link rel="stylesheet" href="style.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
 
-</head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-<body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
-<nav class="navbar">
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<h2>🌍 Premium Travel Planner</h2>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <h2>🌍 Premium Travel Planner</h2>
 
-<ul>
+      <ul>
+        <li>
+          <a href="home.html">Home</a>
+        </li>
 
-<li><a href="home.html">Home</a></li>
+        <li>
+          <a href="plantrip.html">Plan Trip</a>
+        </li>
 
-<li><a href="plantrip.html">Plan Trip</a></li>
+        <li>
+          <a href="mytrips.html">📁 My Trips</a>
+        </li>
 
-<li>
-<select id="language" onchange="changeLanguage()">
-<option value="en">English</option>
-<option value="hi">हिन्दी</option>
-<option value="mr">मराठी</option>
-</select>
-</li>
+        <li>
+          <select id="language" onchange="changeLanguage()">
+            <option value="en">English</option>
+            <option value="hi">हिन्दी</option>
+            <option value="mr">मराठी</option>
+          </select>
+        </li>
 
-<li><a href="about.html">About</a></li>
+        <li>
+          <a href="about.html">About</a>
+        </li>
 
-<li><a href="contact.html">Contact</a></li>
+        <li>
+          <a href="contact.html">Contact</a>
+        </li>
 
-<li><a href="login.html">Logout</a></li>
+        <li>
+          <a href="login.html">Logout</a>
+        </li>
+      </ul>
+    </nav>
 
-</ul>
+    <!-- HERO SECTION -->
+    <section class="hero-home">
+      <div class="hero-text">
+        <h1 id="welcomeText">Welcome Traveller 👋</h1>
 
-</nav>
+        <p id="tagline">
+          Plan your dream vacation with AI. Find Hotels, Tourist Attractions and
+          Transport in one place.
+        </p>
 
-<section class="hero-home">
+        <a href="plantrip.html">
+          <button id="startBtn">🚀 Start Planning</button>
+        </a>
+      </div>
+    </section>
 
-<div class="hero-text">
+    <!-- SERVICES SECTION -->
+    <section class="services">
+      <!-- TOURIST ATTRACTIONS -->
+      <a href="attractions.html" class="service-box">
+        <h3 id="tourTitle">🧳 Tourist Attractions</h3>
 
-<h1 id="welcomeText">Welcome Traveller 👋</h1>
+        <p id="tourText">Discover famous tourist places.</p>
+      </a>
 
-<p id="tagline">
-Plan your dream vacation with AI.
-Find Hotels, Tourist Attractions and Transport in one place.
-</p>
+      <!-- HOTELS -->
+      <a href="hotels.html" class="service-box">
+        <h3 id="hotelTitle">🏨 Hotels</h3>
 
-<a href="plantrip.html">
-<button id="startBtn">
-🚀 Start Planning
-</button>
-</a>
+        <p id="hotelText">Find the best hotels within your budget.</p>
+      </a>
 
-</div>
+      <!-- TRANSPORT -->
+      <a href="transport.html" class="service-box">
+        <h3 id="transportTitle">🚌 Transport</h3>
 
-</section>
+        <p id="transportText">Get transport recommendations.</p>
+      </a>
 
+      <!-- TRAVEL MAPS -->
+      <a href="maps.html" class="service-box">
+        <h3>🗺️ Travel Maps</h3>
 
-<section class="services">
+        <p>Explore your destination on the map.</p>
+      </a>
 
-<a href="attractions.html" class="service-box">
+      <!-- WEATHER -->
+      <a href="weather.html" class="service-box">
+        <h3>🌦️ Weather</h3>
 
-<h3 id="tourTitle">
-🧳 Tourist Attractions
-</h3>
+        <p>Check weather conditions for your destination.</p>
+      </a>
 
-<p id="tourText">
-Discover famous tourist places.
-</p>
+      <!-- BUDGET CALCULATOR -->
+      <a href="budget.html" class="service-box">
+        <h3>💰 Budget Calculator</h3>
 
-</a>
+        <p>Calculate and manage your trip expenses.</p>
+      </a>
 
+      <!-- TRIP SHARING -->
+      <a href="sharing.html" class="service-box">
+        <h3>👥 Trip Sharing</h3>
 
+        <p>Share your travel plans with friends and family.</p>
+      </a>
+    </section>
 
-<a href="hotels.html" class="service-box">
+    <!-- FOOTER -->
+    <footer>
+      <p>© 2026 Premium Travel Planner | AI Based Travel Planner</p>
+    </footer>
 
-<h3 id="hotelTitle">
-🏨 Hotels
-</h3>
-
-<p id="hotelText">
-Find the best hotels within your budget.
-</p>
-
-</a>
-
-
-
-<a href="transport.html" class="service-box">
-
-<h3 id="transportTitle">
-🚌 Transport
-</h3>
-
-<p id="transportText">
-Get transport recommendations.
-</p>
-
-</a>
-
-</section>
-
-
-
-<footer>
-
-<p>
-© 2026 Premium Travel Planner |
-AI Based Travel Planner
-</p>
-
-</footer>
-
-<script src="script.js"></script>
-
-</body>
-
+    <!-- JAVASCRIPT -->
+    <script src="script.js"></script>
+  </body>
 </html>

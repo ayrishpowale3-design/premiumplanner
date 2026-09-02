@@ -1,87 +1,117 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Premium Travel Planner</title>
 
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
 
-<title>Plan Trip</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-<link rel="stylesheet" href="style.css">
-</head>
-<body class="plantrip-page">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
-<nav class="navbar">
-    <h2>🌍 Premium Travel Planner</h2>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="plantrip-page">
+    <nav class="navbar">
+      <h2>🌍 Premium Travel Planner</h2>
 
-    <ul>
+      <ul>
         <li><a href="home.html">Home</a></li>
 
         <li>
-            <select id="language">
-                <option>English</option>
-                <option>हिन्दी</option>
-                <option>मराठी</option>
-            </select>
+          <select id="language">
+            <option>English</option>
+            <option>हिन्दी</option>
+            <option>मराठी</option>
+          </select>
         </li>
 
         <li><a href="login.html">Logout</a></li>
-    </ul>
-</nav>
+      </ul>
+    </nav>
 
-<div class="trip-container">
+    <div class="trip-container">
+      <h1><i class="fa-solid fa-plane-departure"></i> Plan Your Dream Trip</h1>
 
-    <h1>✈ Plan Your Dream Trip</h1>
+      <div class="form-grid">
+        <div class="form-group">
+          <label><i class="fa-solid fa-location-dot"></i> Source City</label>
+          <input type="text" id="source" placeholder="Enter source city" />
+        </div>
 
-    <label>Source City</label>
-    <input type="text" id="source">
+        <div class="form-group">
+          <label
+            ><i class="fa-solid fa-map-location-dot"></i> Destination
+            City</label
+          >
+          <input type="text" id="destination" placeholder="Enter destination" />
+        </div>
 
-    <label>Destination City</label>
-    <input type="text" id="destination">
+        <div class="form-group">
+          <label><i class="fa-solid fa-calendar-days"></i> Start Date</label>
+          <input type="date" id="startDate" />
+        </div>
 
-    <label>Start Date</label>
-    <input type="date" id="startDate">
+        <div class="form-group">
+          <label><i class="fa-solid fa-calendar-check"></i> End Date</label>
+          <input type="date" id="endDate" />
+        </div>
 
-    <label>End Date</label>
-    <input type="date" id="endDate">
+        <div class="form-group">
+          <label><i class="fa-solid fa-wallet"></i> Budget (₹)</label>
+          <input type="number" id="budget" placeholder="15000" />
+        </div>
 
-    <label>Budget (₹)</label>
-    <input type="number" id="budget">
+        <div class="form-group">
+          <label><i class="fa-solid fa-users"></i> Travellers</label>
+          <input type="number" id="travellers" placeholder="2" />
+        </div>
 
-    <label>Number of Travellers</label>
-    <input type="number" id="travellers">
+        <div class="form-group">
+          <label><i class="fa-solid fa-compass"></i> Travel Interest</label>
+          <select id="interest">
+            <option>Adventure</option>
+            <option>Beach</option>
+            <option>Nature</option>
+            <option>Religious</option>
+          </select>
+        </div>
 
-    <label>Travel Interest</label>
-    <select id="interest">
-        <option>Adventure</option>
-        <option>Beach</option>
-        <option>Nature</option>
-        <option>Religious</option>
-    </select>
+        <div class="form-group">
+          <label><i class="fa-solid fa-bus"></i> Transport</label>
+          <select id="transport">
+            <option>Flight</option>
+            <option>Train</option>
+            <option>Bus</option>
+            <option>Car</option>
+          </select>
+        </div>
 
-    <label>Transport</label>
-    <select id="transport">
-        <option>Flight</option>
-        <option>Train</option>
-        <option>Bus</option>
-        <option>Car</option>
-    </select>
+        <div class="form-group full-width">
+          <label><i class="fa-solid fa-hotel"></i> Hotel Preference</label>
+          <select id="hotel">
+            <option>Budget</option>
+            <option>3 Star</option>
+            <option>4 Star</option>
+            <option>5 Star</option>
+          </select>
+        </div>
+      </div>
 
-    <label>Hotel Preference</label>
-    <select id="hotel">
-        <option>Budget</option>
-        <option>3 Star</option>
-        <option>4 Star</option>
-        <option>5 Star</option>
-    </select>
-
-    <button onclick="generateTrip()">
+      <button onclick="generateTrip()">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
         Generate AI Itinerary
-    </button>
-
-</div>
-
-<script src="script.js"></script>
-
-</body>
+      </button>
+    </div>
+    <script src="script.js"></script>
+  </body>
 </html>
