@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Transport - Premium Travel Planner</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .page-container {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .page-container h1 {
+      margin-bottom: 10px;
+    }
+
+    .search-box {
+      margin: 30px 0;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-box input {
+      padding: 15px;
+      width: 30%;
+      min-width: 250px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .search-box button {
+      padding: 15px 25px;
+      border: none;
+      border-radius: 10px;
+      background: #2196f3;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .search-box button:hover {
+      opacity: 0.9;
+    }
+
+    #transportResult {
+      margin-top: 30px;
+      text-align: left;
+    }
+
+    .transport-card {
+      padding: 20px;
+      margin: 15px 0;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .transport-card h3 {
+      margin: 0 0 10px;
+      color: #222;
+    }
+
+    .transport-card p {
+      margin: 6px 0;
+      color: #555;
+    }
+
+    .loading {
+      text-align: center;
+      font-size: 17px;
+    }
+
+    .error {
+      text-align: center;
+      color: #d32f2f;
+      font-size: 16px;
+    }
+
+    .no-results {
+      text-align: center;
+      color: #666;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+
+  <nav class="navbar">
+
+    <h2>🌍 Premium Travel Planner</h2>
+
+    <ul>
+
+      <li>
+        <a href="home.html">Home</a>
+      </li>
+
+      <li>
+        <a href="plantrip.html">Plan Trip</a>
+      </li>
+
+      <li>
+        <a href="mytrips.html">📁 My Trips</a>
+      </li>
+
+      <li>
+        <a href="about.html">About</a>
+      </li>
+
+      <li>
+        <a href="contact.html">Contact</a>
+      </li>
+
+    </ul>
+
+  </nav>
+
+
+  <!-- MAIN CONTENT -->
+
+  <div class="page-container">
+
+    <h1>🚌 Transport</h1>
+
+    <p>
+      Find transport options between your source and destination.
+    </p>
+
+
+    <!-- SEARCH -->
+
+    <div class="search-box">
+
+      <input
+        type="text"
+        id="sourceCity"
+        placeholder="Source City (e.g. Pune)"
+      >
+
+      <input
+        type="text"
+        id="destinationCity"
+        placeholder="Destination City (e.g. Mumbai)"
+      >
+
+      <button onclick="loadTransport()">
+        🔍 Find Transport
+      </button>
+
+    </div>
+
+
+    <!-- RESULTS -->
+
+    <div id="transportResult"></div>
+
+  </div>
+
+
+  <!-- JAVASCRIPT -->
+
+  <script>
+
+    async function loadTransport() {
+
+      const source =
+        document.getElementById("sourceCity").value.trim();
+
+      const destination =
+        document.getElementById("destinationCity").value.trim();
+
+      const result =
+        document.getElementById("transportResult");
+
+
+      // Check destination
+
+      if (!destination) {
+
+        result.innerHTML =
+          '<p class="error">❌ Please enter destination city.</p>';
+
+        return;
+
+      }
+
+
+      // Check source
+
+      if (!source) {
+
+        result.innerHTML =
+          '<p class="error">❌ Please enter source city.</p>';
+
+        return;
+
+      }
+
+
+      // Loading message
+
+      result.innerHTML =
+        '<p class="loading">🔄 Finding transport options...</p>';
+
+
+      try {
+
+        const url =
+          "/api/transport?source=" +
+          encodeURIComponent(source) +
+          "&destination=" +
+          encodeURIComponent(destination);
+
+
+        const response = await fetch(url);
+
+
+        // Try to read JSON
+
+        const data = await response.json();
+
+
+        // Backend error
+
+        if (!response.ok) {
+
+          result.innerHTML =
+            '<p class="error">❌ ' +
+            (data.error || "Unable to load transport options.") +
+            '</p>';
+
+          console.error("Backend error:", data);
+
+          return;
+
+        }
+
+
+        // Backend returned success:false
+
+        if (data.success === false) {
+
+          result.innerHTML =
+            '<p class="error">❌ ' +
+            (data.error || "Unable to find transport.") +
+            '</p>';
+
+          return;
+
+        }
+
+
+        result.innerHTML = "";
+
+
+        // No transport
+
+        if (
+          !data.transport ||
+          data.transport.length === 0
+        ) {
+
+          result.innerHTML =
+            '<p class="no-results">' +
+            'No transport information found for ' +
+            source +
+            ' → ' +
+            destination +
+            '.</p>';
+
+          return;
+
+        }
+
+
+        // Display transport
+
+        data.transport.forEach(function(item) {
+
+          result.innerHTML += `
+
+            <div class="transport-card">
+
+              <h3>
+                ${item.icon || "🚌"}
+                ${item.type || "Transport"}
+              </h3>
+
+              <p>
+                <strong>From:</strong>
+                ${source}
+              </p>
+
+              <p>
+                <strong>To:</strong>
+                ${destination}
+              </p>
+
+              <p>
+                ${item.description || ""}
+              </p>
+
+            </div>
+
+          `;
+
+        });
+
+      }
+
+
+      catch (error) {
+
+        console.error("Transport Error:", error);
+
+        result.innerHTML =
+          '<p class="error">' +
+          '❌ Unable to connect to backend. ' +
+          'Please make sure Flask is running.' +
+          '</p>';
+
+      }
+
+    }
+
+  </script>
+
+</body>
+
+</html>

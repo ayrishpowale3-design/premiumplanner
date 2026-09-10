@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>My Trips | Premium Travel Planner</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        .trips-container {
+
+            max-width: 1000px;
+
+            margin: 50px auto;
+
+            padding: 20px;
+
+        }
+
+        .trips-container h1 {
+
+            text-align: center;
+
+            margin-bottom: 35px;
+
+        }
+
+        .trip-card {
+
+            background: white;
+
+            padding: 25px;
+
+            margin-bottom: 20px;
+
+            border-radius: 18px;
+
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+
+        }
+
+        .trip-card h2 {
+
+            margin-top: 0;
+
+        }
+
+        .trip-info {
+
+            margin: 10px 0;
+
+            font-size: 16px;
+
+        }
+
+        .delete-btn {
+
+            margin-top: 15px;
+
+            padding: 10px 18px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #e53935;
+
+            color: white;
+
+            cursor: pointer;
+
+        }
+
+        .share-btn {
+
+            margin-top: 15px;
+
+            margin-left: 10px;
+
+            padding: 10px 18px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #0099ff;
+
+            color: white;
+
+            cursor: pointer;
+
+        }
+
+        .no-trips {
+
+            text-align: center;
+
+            padding: 40px;
+
+            background: white;
+
+            border-radius: 15px;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<nav class="navbar">
+
+    <h2>🌍 Premium Travel Planner</h2>
+
+    <ul>
+
+        <li>
+            <a href="home.html">Home</a>
+        </li>
+
+        <li>
+            <a href="plantrip.html">Plan Trip</a>
+        </li>
+
+        <li>
+            <a href="mytrips.html">📁 My Trips</a>
+        </li>
+
+        <li>
+            <a href="about.html">About</a>
+        </li>
+
+        <li>
+            <a href="contact.html">Contact</a>
+        </li>
+
+    </ul>
+
+</nav>
+
+
+<div class="trips-container">
+
+    <h1>📁 My Saved Trips</h1>
+
+    <div id="tripsContainer">
+
+        <p class="no-trips">
+            Loading your trips...
+        </p>
+
+    </div>
+
+</div>
+
+
+<script src="mytrips.js"></script>
+
+
+</body>
+
+</html>

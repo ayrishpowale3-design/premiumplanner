@@ -2,22 +2,46 @@ from flask import Flask, send_from_directory, request, jsonify
 import sqlite3
 import os
 import pandas as pd
-import random
 import urllib.parse
 import urllib.request
 import json
 
 app = Flask(__name__)
 
-FRONTEND_FOLDER = os.path.join(os.path.dirname(__file__), "../frontend")
+# ============================================================
+# FRONTEND
+# ============================================================
+
+FRONTEND_FOLDER = os.path.join(
+    os.path.dirname(__file__),
+    "../frontend"
+)
+
+# ============================================================
+# DATABASE
+# ============================================================
 
 DATABASE = "travelplanner.db"
-# ---------------- DATASETS ----------------
 
-DATASET_FOLDER = os.path.join(os.path.dirname(__file__), "datasets")
 
-HOTEL_FILE = os.path.join(DATASET_FOLDER, "google_hotel_data_clean_v2.csv")
-PLACE_FILE = os.path.join(DATASET_FOLDER, "Top Indian Places to Visit.csv")
+# ============================================================
+# DATASETS
+# ============================================================
+
+DATASET_FOLDER = os.path.join(
+    os.path.dirname(__file__),
+    "datasets"
+)
+
+HOTEL_FILE = os.path.join(
+    DATASET_FOLDER,
+    "google_hotel_data_clean_v2.csv"
+)
+
+PLACE_FILE = os.path.join(
+    DATASET_FOLDER,
+    "Top Indian Places to Visit.csv"
+)
 
 try:
     hotels_df = pd.read_csv(HOTEL_FILE)
@@ -30,49 +54,49 @@ try:
 except Exception as e:
     print("Dataset Loading Error:", e)
 
-# ---------------- DATABASE ----------------
+    hotels_df = pd.DataFrame()
+    places_df = pd.DataFrame()
 
+
+# ============================================================
+# DATABASE CREATION
+# ============================================================
 
 def create_database():
+
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
+    # ---------------- USERS TABLE ----------------
+
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        fullname TEXT,
-        email TEXT UNIQUE,
-        mobile TEXT,
-        password TEXT
-    )
+        CREATE TABLE IF NOT EXISTS users(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            fullname TEXT,
+            email TEXT UNIQUE,
+            mobile TEXT,
+            password TEXT
+        )
     """)
+
+    # ---------------- TRIP HISTORY TABLE ----------------
+
     cursor.execute("""
-CREATE TABLE IF NOT EXISTS trip_history(
+        CREATE TABLE IF NOT EXISTS trip_history(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            source TEXT,
+            destination TEXT,
+            start_date TEXT,
+            end_date TEXT,
+            budget INTEGER,
+            travellers INTEGER,
+            interest TEXT,
+            transport TEXT,
+            hotel TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
 
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-    source TEXT,
-
-    destination TEXT,
-
-    start_date TEXT,
-
-    end_date TEXT,
-
-    budget INTEGER,
-
-    travellers INTEGER,
-
-    interest TEXT,
-
-    transport TEXT,
-
-    hotel TEXT,
-
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
-)
-""")
     conn.commit()
     conn.close()
 
@@ -80,340 +104,738 @@ CREATE TABLE IF NOT EXISTS trip_history(
 create_database()
 
 
-# ---------------- PAGES ----------------
-
-
-@app.route("/")
-def index():
-    return send_from_directory(FRONTEND_FOLDER, "index.html")
-
-
-@app.route("/login.html")
-def login_page():
-    return send_from_directory(FRONTEND_FOLDER, "login.html")
-
-
-@app.route("/register.html")
-def register_page():
-    return send_from_directory(FRONTEND_FOLDER, "register.html")
-
-
-@app.route("/home.html")
-def home_page():
-    return send_from_directory(FRONTEND_FOLDER, "home.html")
-
-
-# ======== NEW ROUTE ========
-
-
-@app.route("/plantrip.html")
-def plantrip_page():
-    return send_from_directory(FRONTEND_FOLDER, "plantrip.html")
-
-
-# ===========================
-
-
-@app.route("/<path:path>")
-def static_files(path):
-    return send_from_directory(FRONTEND_FOLDER, path)
+# ============================================================
+# FAVORITE COLUMN
+# ============================================================
 
 def ensure_favorite_column():
+
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
     try:
+
         cursor.execute(
-            "ALTER TABLE trip_history ADD COLUMN is_favorite INTEGER DEFAULT 0"
+            "ALTER TABLE trip_history "
+            "ADD COLUMN is_favorite INTEGER DEFAULT 0"
         )
+
     except sqlite3.OperationalError:
         # Column already exists
         pass
 
     conn.commit()
     conn.close()
-# ---------------- REGISTER API ----------------
 
+
+ensure_favorite_column()
+
+
+# ============================================================
+# PAGE ROUTES
+# ============================================================
+
+@app.route("/")
+def index():
+
+    return send_from_directory(
+        FRONTEND_FOLDER,
+        "index.html"
+    )
+
+
+@app.route("/login.html")
+def login_page():
+
+    return send_from_directory(
+        FRONTEND_FOLDER,
+        "login.html"
+    )
+
+
+@app.route("/register.html")
+def register_page():
+
+    return send_from_directory(
+        FRONTEND_FOLDER,
+        "register.html"
+    )
+
+
+@app.route("/home.html")
+def home_page():
+
+    return send_from_directory(
+        FRONTEND_FOLDER,
+        "home.html"
+    )
+
+
+@app.route("/plantrip.html")
+def plantrip_page():
+
+    return send_from_directory(
+        FRONTEND_FOLDER,
+        "plantrip.html"
+    )
+
+
+# ============================================================
+# SERVE OTHER FRONTEND FILES
+# ============================================================
+
+@app.route("/<path:path>")
+def static_files(path):
+
+    return send_from_directory(
+        FRONTEND_FOLDER,
+        path
+    )
+
+
+# ============================================================
+# REGISTER API
+# ============================================================
 
 @app.route("/register", methods=["POST"])
 def register():
 
-    data = request.get_json()
+    try:
 
-    fullname = data["fullname"]
-    email = data["email"]
-    mobile = data["mobile"]
-    password = data["password"]
+        data = request.get_json()
 
-    conn = sqlite3.connect(DATABASE)
-    cursor = conn.cursor()
+        fullname = data["fullname"]
+        email = data["email"]
+        mobile = data["mobile"]
+        password = data["password"]
 
-    cursor.execute("SELECT * FROM users WHERE email=?", (email,))
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
 
-    user = cursor.fetchone()
+        # Check whether email already exists
 
-    if user:
+        cursor.execute(
+            "SELECT * FROM users WHERE email=?",
+            (email,)
+        )
+
+        user = cursor.fetchone()
+
+        if user:
+
+            conn.close()
+
+            return jsonify({
+                "success": False,
+                "message": "Email already exists"
+            })
+
+        # Insert new user
+
+        cursor.execute(
+            """
+            INSERT INTO users
+            (fullname, email, mobile, password)
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                fullname,
+                email,
+                mobile,
+                password
+            )
+        )
+
+        conn.commit()
         conn.close()
-        return jsonify({"success": False, "message": "Email already exists"})
 
-    cursor.execute(
-        "INSERT INTO users(fullname,email,mobile,password) VALUES(?,?,?,?)",
-        (fullname, email, mobile, password),
-    )
+        return jsonify({
+            "success": True
+        })
 
-    conn.commit()
-    conn.close()
+    except Exception as e:
 
-    return jsonify({"success": True})
+        print("Register Error:", e)
+
+        return jsonify({
+            "success": False,
+            "message": "Registration failed"
+        }), 500
 
 
-# ---------------- LOGIN API ----------------
-
+# ============================================================
+# LOGIN API
+# ============================================================
 
 @app.route("/login", methods=["POST"])
 def login():
 
-    data = request.get_json()
+    try:
 
-    email = data["email"]
-    password = data["password"]
+        data = request.get_json()
 
-    conn = sqlite3.connect(DATABASE)
-    cursor = conn.cursor()
+        email = data["email"]
+        password = data["password"]
 
-    cursor.execute(
-        "SELECT * FROM users WHERE email=? AND password=?", (email, password)
-    )
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
 
-    user = cursor.fetchone()
+        cursor.execute(
+            """
+            SELECT *
+            FROM users
+            WHERE email=? AND password=?
+            """,
+            (
+                email,
+                password
+            )
+        )
 
-    conn.close()
+        user = cursor.fetchone()
 
-    if user:
-        return jsonify({"success": True})
+        conn.close()
 
-    return jsonify({"success": False})
+        if user:
+
+            return jsonify({
+                "success": True
+            })
+
+        return jsonify({
+            "success": False,
+            "message": "Invalid email or password"
+        })
+
+    except Exception as e:
+
+        print("Login Error:", e)
+
+        return jsonify({
+            "success": False,
+            "message": "Login failed"
+        }), 500
+
+
+# ============================================================
+# GENERATE TRIP API
+# ============================================================
 
 @app.route("/generate-trip", methods=["POST"])
 def generate_trip():
 
-    data = request.get_json()
+    try:
 
-    source = data["source"]
-    print(data)
-    destination = data["destination"]
+        data = request.get_json() or {}
 
-    start_date = data["startDate"]
-    end_date = data["endDate"]
+        source = str(data.get("source", "")).strip()
+        destination = str(data.get("destination", "")).strip()
 
-    budget = data["budget"]
+        start_date = str(data.get("startDate", "")).strip()
+        end_date = str(data.get("endDate", "")).strip()
 
-    travellers = data["travellers"]
+        # ====================================================
+        # SAFELY CONVERT BUDGET
+        # ====================================================
 
-    interest = data["interest"]
+        budget_value = data.get("budget", 0)
 
-    transport = data["transport"]
+        if isinstance(budget_value, str):
+            # Accept values such as 40000, 40,000, ₹40,000
+            budget_value = budget_value.replace(",", "")
+            budget_value = budget_value.replace("₹", "")
+            budget_value = budget_value.strip()
 
-    hotel = data["hotel"]
+        budget = int(float(budget_value))
 
-    city_hotels = hotels_df[
-        hotels_df["City"].str.lower() == destination.lower()
-    ]
+        # ====================================================
+        # SAFELY CONVERT TRAVELLERS
+        # ====================================================
 
-    city_places = places_df[
-        places_df["City"].str.lower() == destination.lower()
-    ]
+        travellers_value = data.get("travellers", 1)
 
-    if city_hotels.empty:
-        city_hotels = hotels_df
+        if isinstance(travellers_value, str):
+            import re
+            match = re.search(r"\d+", travellers_value)
 
-    if city_places.empty:
-        city_places = places_df
+            if match:
+                travellers_value = match.group()
+            else:
+                travellers_value = 1
 
-    hotels = city_hotels.sample(
-        min(3, len(city_hotels))
-    )["Hotel_Name"].tolist()
+        travellers = int(travellers_value)
 
-    places = city_places.sample(
-        min(4, len(city_places))
-    )["Name"].tolist()
+        interest = str(data.get("interest", "")).strip()
+        transport = str(data.get("transport", "")).strip()
+        hotel = str(data.get("hotel", "")).strip()
 
-    conn = sqlite3.connect(DATABASE)
-    cursor = conn.cursor()
+        print("Trip Request:")
+        print(data)
+        print("Processed Budget:", budget)
+        print("Processed Travellers:", travellers)
 
-    cursor.execute("""
-        INSERT INTO trip_history
-        (source, destination, start_date, end_date, budget,
-         travellers, interest, transport, hotel)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        source,
-        destination,
-        start_date,
-        end_date,
-        budget,
-        travellers,
-        interest,
-        transport,
-        hotel
-    ))
+        # ====================================================
+        # FIND HOTELS
+        # ====================================================
 
-    conn.commit()
-    conn.close()
+        if not hotels_df.empty:
 
-    return jsonify({
-        "hotels": hotels,
-        "places": places,
-        "budget": random.randint(8000, 30000)
-    })
-    # ---------------- AI ITINERARY ----------------
+            city_hotels = hotels_df[
+                hotels_df["City"]
+                .astype(str)
+                .str.lower()
+                == destination.lower()
+            ]
+
+        else:
+
+            city_hotels = pd.DataFrame()
+
+        if city_hotels.empty and not hotels_df.empty:
+            city_hotels = hotels_df
+
+        if not city_hotels.empty:
+
+            hotels = city_hotels.sample(
+                min(3, len(city_hotels))
+            )["Hotel_Name"].tolist()
+
+        else:
+
+            hotels = []
+
+        # ====================================================
+        # FIND TOURIST PLACES
+        # ====================================================
+
+        if not places_df.empty:
+
+            city_places = places_df[
+                places_df["City"]
+                .astype(str)
+                .str.lower()
+                == destination.lower()
+            ]
+
+        else:
+
+            city_places = pd.DataFrame()
+
+        if city_places.empty and not places_df.empty:
+            city_places = places_df
+
+        if not city_places.empty:
+
+            places = city_places.sample(
+                min(4, len(city_places))
+            )["Name"].tolist()
+
+        else:
+
+            places = []
+
+        # ====================================================
+        # SAVE TRIP TO DATABASE
+        # ====================================================
+
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            INSERT INTO trip_history
+            (
+                source,
+                destination,
+                start_date,
+                end_date,
+                budget,
+                travellers,
+                interest,
+                transport,
+                hotel
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                source,
+                destination,
+                start_date,
+                end_date,
+                budget,
+                travellers,
+                interest,
+                transport,
+                hotel
+            )
+        )
+
+        conn.commit()
+        conn.close()
+
+        # ====================================================
+        # RETURN TRIP DATA
+        # ====================================================
+
+        return jsonify({
+
+            "success": True,
+            "source": source,
+            "destination": destination,
+            "startDate": start_date,
+            "endDate": end_date,
+            "travellers": travellers,
+            "interest": interest,
+            "transport": transport,
+            "hotel": hotel,
+            "hotels": hotels,
+            "places": places,
+
+            # Use the actual budget entered by the user
+            "budget": budget
+
+        })
+
+    except Exception as e:
+
+        print("Generate Trip Error:", e)
+
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
+
+# ============================================================
+# AI ITINERARY API
+# ============================================================
 
 @app.route("/ai-itinerary", methods=["POST"])
 def ai_itinerary():
 
-    data = request.get_json()
+    try:
 
-    destination = data["destination"]
-    start_date = data["startDate"]
-    end_date = data["endDate"]
-    interest = data["interest"]
-    travellers = int(data["travellers"])
-    budget = int(data["budget"])
+        data = request.get_json() or {}
 
-    # Get places for destination
-    city_places = places_df[
-        places_df["City"].str.lower() == destination.lower()
-    ]
+        destination = str(data.get("destination", "")).strip()
+        start_date = str(data.get("startDate", "")).strip()
+        end_date = str(data.get("endDate", "")).strip()
+        interest = str(data.get("interest", "")).strip()
 
-    # If destination is not found, use complete dataset
-    if city_places.empty:
-        city_places = places_df
+        # ====================================================
+        # SAFELY CONVERT TRAVELLERS
+        # ====================================================
 
-    # Select maximum 8 places
-    places = city_places.sample(
-        min(8, len(city_places))
-    )["Name"].tolist()
+        travellers_value = data.get("travellers", 1)
 
-    # Create itinerary
-    itinerary = []
+        if isinstance(travellers_value, str):
+            import re
+            match = re.search(r"\d+", travellers_value)
 
-    for i, place in enumerate(places):
-        day = (i // 2) + 1
+            if match:
+                travellers_value = match.group()
+            else:
+                travellers_value = 1
 
-        if len(itinerary) < day:
-            itinerary.append({
-                "day": day,
-                "morning": "",
-                "evening": ""
-            })
+        travellers = int(travellers_value)
 
-        if itinerary[day - 1]["morning"] == "":
-            itinerary[day - 1]["morning"] = place
+        # ====================================================
+        # SAFELY CONVERT BUDGET
+        # ====================================================
+
+        budget_value = data.get("budget", 0)
+
+        if isinstance(budget_value, str):
+            budget_value = budget_value.replace(",", "")
+            budget_value = budget_value.replace("₹", "")
+            budget_value = budget_value.strip()
+
+        budget = int(float(budget_value))
+
+        print("AI Itinerary Request:")
+        print(data)
+        print("Processed Budget:", budget)
+        print("Processed Travellers:", travellers)
+
+        # ====================================================
+        # GET PLACES FOR DESTINATION
+        # ====================================================
+
+        if not places_df.empty:
+
+            city_places = places_df[
+                places_df["City"]
+                .astype(str)
+                .str.lower()
+                == destination.lower()
+            ]
+
         else:
-            itinerary[day - 1]["evening"] = place
 
-    return jsonify({
-        "success": True,
-        "destination": destination,
-        "start_date": start_date,
-        "end_date": end_date,
-        "interest": interest,
-        "travellers": travellers,
-        "budget": budget,
-        "itinerary": itinerary
-    })
+            city_places = pd.DataFrame()
+
+        if city_places.empty and not places_df.empty:
+            city_places = places_df
+
+        # ====================================================
+        # SELECT PLACES
+        # ====================================================
+
+        if not city_places.empty:
+
+            places = city_places.sample(
+                min(8, len(city_places))
+            )["Name"].tolist()
+
+        else:
+
+            places = []
+
+        # ====================================================
+        # CREATE DAY-WISE ITINERARY
+        # ====================================================
+
+        itinerary = []
+
+        for i, place in enumerate(places):
+
+            day = (i // 2) + 1
+
+            if len(itinerary) < day:
+
+                itinerary.append({
+                    "day": day,
+                    "morning": "",
+                    "evening": ""
+                })
+
+            if itinerary[day - 1]["morning"] == "":
+
+                itinerary[day - 1]["morning"] = place
+
+            else:
+
+                itinerary[day - 1]["evening"] = place
+
+        # ====================================================
+        # RETURN ITINERARY
+        # ====================================================
+
+        return jsonify({
+
+            "success": True,
+            "destination": destination,
+            "start_date": start_date,
+            "end_date": end_date,
+            "interest": interest,
+            "travellers": travellers,
+
+            # Use user's entered budget
+            "budget": budget,
+
+            "itinerary": itinerary
+
+        })
+
+    except Exception as e:
+
+        print("AI Itinerary Error:", e)
+
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
+
+# ============================================================
+# TRIP HISTORY API
+# ============================================================
+
 @app.route("/trip-history")
 def trip_history():
 
-    conn = sqlite3.connect(DATABASE)
-    cursor = conn.cursor()
+    try:
 
-    cursor.execute("""
-        SELECT id, source, destination, start_date, end_date,
-               budget, travellers, interest, transport, hotel,
-               created_at, is_favorite
-        FROM trip_history
-        ORDER BY created_at DESC
-    """)
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
 
-    rows = cursor.fetchall()
-    conn.close()
+        cursor.execute(
+            """
+            SELECT
+                id,
+                source,
+                destination,
+                start_date,
+                end_date,
+                budget,
+                travellers,
+                interest,
+                transport,
+                hotel,
+                created_at,
+                is_favorite
+            FROM trip_history
+            ORDER BY created_at DESC
+            """
+        )
 
-    trips = []
+        rows = cursor.fetchall()
 
-    for row in rows:
-      trips.append({
-        "id": row[0],
-        "source": row[1],
-        "destination": row[2],
-        "start_date": row[3],
-        "end_date": row[4],
-        "budget": row[5],
-        "travellers": row[6],
-        "interest": row[7],
-        "transport": row[8],
-        "hotel": row[9],
-        "created_at": row[10],
-        "is_favorite": row[11]
-    })
-    return jsonify(trips)
-@app.route("/favorite-trip/<int:trip_id>", methods=["POST"])
+        conn.close()
+
+        trips = []
+
+        for row in rows:
+
+            trips.append({
+
+                "id": row[0],
+
+                "source": row[1],
+
+                "destination": row[2],
+
+                "start_date": row[3],
+
+                "end_date": row[4],
+
+                "budget": row[5],
+
+                "travellers": row[6],
+
+                "interest": row[7],
+
+                "transport": row[8],
+
+                "hotel": row[9],
+
+                "created_at": row[10],
+
+                "is_favorite": row[11]
+
+            })
+
+
+        return jsonify(trips)
+
+    except Exception as e:
+
+        print("Trip History Error:", e)
+
+        return jsonify({
+            "success": False,
+            "message": "Unable to load trip history"
+        }), 500
+
+
+# ============================================================
+# FAVORITE TRIP API
+# ============================================================
+
+@app.route(
+    "/favorite-trip/<int:trip_id>",
+    methods=["POST"]
+)
 def favorite_trip(trip_id):
-    conn = sqlite3.connect(DATABASE)
-    cursor = conn.cursor()
 
-    cursor.execute(
-        """
-        UPDATE trip_history
-        SET is_favorite = CASE
-            WHEN is_favorite = 1 THEN 0
-            ELSE 1
-        END
-        WHERE id = ?
-        """,
-        (trip_id,)
-    )
+    try:
 
-    conn.commit()
-    conn.close()
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
 
-    return jsonify({"success": True})
-@app.route("/delete-trip/<int:trip_id>", methods=["DELETE"])
+        cursor.execute(
+            """
+            UPDATE trip_history
+            SET is_favorite =
+                CASE
+                    WHEN is_favorite = 1 THEN 0
+                    ELSE 1
+                END
+            WHERE id = ?
+            """,
+            (trip_id,)
+        )
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            "success": True
+        })
+
+    except Exception as e:
+
+        print("Favorite Trip Error:", e)
+
+        return jsonify({
+            "success": False
+        }), 500
+
+
+# ============================================================
+# DELETE TRIP API
+# ============================================================
+
+@app.route(
+    "/delete-trip/<int:trip_id>",
+    methods=["DELETE"]
+)
 def delete_trip(trip_id):
-    conn = sqlite3.connect(DATABASE)
-    cursor = conn.cursor()
 
-    cursor.execute(
-        "DELETE FROM trip_history WHERE id = ?",
-        (trip_id,)
-    )
+    try:
 
-    conn.commit()
-    conn.close()
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
 
-    return jsonify({"success": True})
-ensure_favorite_column()
+        cursor.execute(
+            """
+            DELETE FROM trip_history
+            WHERE id = ?
+            """,
+            (trip_id,)
+        )
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            "success": True
+        })
+
+    except Exception as e:
+
+        print("Delete Trip Error:", e)
+
+        return jsonify({
+            "success": False
+        }), 500
 
 
-# ==================== WEATHER API ====================
-
-import urllib.parse
-import urllib.request
-import json
-
+# ============================================================
+# WEATHER API
+# ============================================================
 
 @app.route("/api/weather")
 def get_weather():
 
-    city = request.args.get("city", "").strip()
+    city = request.args.get(
+        "city",
+        ""
+    ).strip()
 
     if not city:
+
         return jsonify({
             "error": "Please enter a city"
         }), 400
 
+
     try:
-        # Open-Meteo Geocoding API
+
+        # ====================================================
+        # OPEN-METEO GEOCODING API
+        # ====================================================
+
         geo_url = (
             "https://geocoding-api.open-meteo.com/v1/search?"
             + urllib.parse.urlencode({
@@ -424,24 +846,44 @@ def get_weather():
             })
         )
 
-        with urllib.request.urlopen(geo_url, timeout=10) as response:
-            geo_data = json.loads(response.read().decode("utf-8"))
+
+        with urllib.request.urlopen(
+            geo_url,
+            timeout=10
+        ) as response:
+
+            geo_data = json.loads(
+                response.read().decode("utf-8")
+            )
+
+
+        # City not found
 
         if not geo_data.get("results"):
+
             return jsonify({
                 "error": "City not found"
             }), 404
+
 
         location = geo_data["results"][0]
 
         latitude = location["latitude"]
         longitude = location["longitude"]
 
+
+        # ====================================================
+        # OPEN-METEO WEATHER API
+        # ====================================================
+
         weather_url = (
             "https://api.open-meteo.com/v1/forecast?"
             + urllib.parse.urlencode({
+
                 "latitude": latitude,
+
                 "longitude": longitude,
+
                 "current": (
                     "temperature_2m,"
                     "relative_humidity_2m,"
@@ -451,59 +893,138 @@ def get_weather():
                     "weather_code,"
                     "wind_speed_10m"
                 ),
+
                 "daily": (
                     "weather_code,"
                     "temperature_2m_max,"
                     "temperature_2m_min,"
                     "precipitation_probability_max"
                 ),
+
                 "timezone": "auto",
+
                 "forecast_days": 7
+
             })
         )
 
-        with urllib.request.urlopen(weather_url, timeout=10) as response:
+
+        with urllib.request.urlopen(
+            weather_url,
+            timeout=10
+        ) as response:
+
             weather_data = json.loads(
                 response.read().decode("utf-8")
             )
 
-        current = weather_data.get("current", {})
-        daily = weather_data.get("daily", {})
+
+        current = weather_data.get(
+            "current",
+            {}
+        )
+
+        daily = weather_data.get(
+            "daily",
+            {}
+        )
+
+
+        # ====================================================
+        # RETURN WEATHER DATA
+        # ====================================================
 
         return jsonify({
+
             "success": True,
 
             "location": {
+
                 "city": location.get("name"),
+
                 "country": location.get("country"),
+
                 "latitude": latitude,
+
                 "longitude": longitude
+
             },
 
             "current": {
-                "temperature": current.get("temperature_2m"),
-                "humidity": current.get("relative_humidity_2m"),
-                "feels_like": current.get("apparent_temperature"),
-                "wind_speed": current.get("wind_speed_10m"),
-                "precipitation": current.get("precipitation"),
-                "weather_code": current.get("weather_code"),
-                "is_day": current.get("is_day")
+
+                "temperature":
+                    current.get(
+                        "temperature_2m"
+                    ),
+
+                "humidity":
+                    current.get(
+                        "relative_humidity_2m"
+                    ),
+
+                "feels_like":
+                    current.get(
+                        "apparent_temperature"
+                    ),
+
+                "wind_speed":
+                    current.get(
+                        "wind_speed_10m"
+                    ),
+
+                "precipitation":
+                    current.get(
+                        "precipitation"
+                    ),
+
+                "weather_code":
+                    current.get(
+                        "weather_code"
+                    ),
+
+                "is_day":
+                    current.get(
+                        "is_day"
+                    )
+
             },
 
             "forecast": {
-                "dates": daily.get("time", []),
-                "weather_code": daily.get("weather_code", []),
-                "max_temperature": daily.get(
-                    "temperature_2m_max", []
-                ),
-                "min_temperature": daily.get(
-                    "temperature_2m_min", []
-                ),
-                "rain_probability": daily.get(
-                    "precipitation_probability_max", []
-                )
+
+                "dates":
+                    daily.get(
+                        "time",
+                        []
+                    ),
+
+                "weather_code":
+                    daily.get(
+                        "weather_code",
+                        []
+                    ),
+
+                "max_temperature":
+                    daily.get(
+                        "temperature_2m_max",
+                        []
+                    ),
+
+                "min_temperature":
+                    daily.get(
+                        "temperature_2m_min",
+                        []
+                    ),
+
+                "rain_probability":
+                    daily.get(
+                        "precipitation_probability_max",
+                        []
+                    )
+
             }
+
         })
+
 
     except Exception as e:
 
@@ -514,7 +1035,273 @@ def get_weather():
         }), 500
 
 
-# ==================== START FLASK SERVER ====================
+# ============================================================
+# ATTRACTIONS API
+# ============================================================
+
+@app.route("/api/attractions")
+def get_attractions():
+
+    city = request.args.get(
+        "city",
+        ""
+    ).strip()
+
+    if not city:
+
+        return jsonify({
+            "success": False,
+            "error": "Please enter a city"
+        }), 400
+
+
+    try:
+
+        # ====================================================
+        # FIND ATTRACTIONS
+        # ====================================================
+
+        if places_df.empty:
+
+            city_places = pd.DataFrame()
+
+        else:
+
+            city_places = places_df[
+                places_df["City"]
+                .astype(str)
+                .str.lower()
+                == city.lower()
+            ]
+
+
+        attractions = []
+
+
+        for _, place in city_places.iterrows():
+
+            attractions.append({
+
+                "name":
+                    str(place["Name"]),
+
+                "city":
+                    str(place["City"]),
+
+                "state":
+                    str(place["State"])
+
+            })
+
+
+        return jsonify({
+
+            "success": True,
+
+            "city": city,
+
+            "attractions": attractions
+
+        })
+
+
+    except Exception as e:
+
+        print("Attractions Error:", e)
+
+        return jsonify({
+
+            "success": False,
+
+            "error": "Unable to load attractions"
+
+        }), 500
+
+
+# ============================================================
+# HOTELS API
+# ============================================================
+
+@app.route("/api/hotels")
+def get_hotels():
+
+    city = request.args.get(
+        "city",
+        ""
+    ).strip()
+
+    if not city:
+
+        return jsonify({
+
+            "success": False,
+
+            "error": "Please enter a city"
+
+        }), 400
+
+
+    try:
+
+        # ====================================================
+        # FIND HOTELS
+        # ====================================================
+
+        if hotels_df.empty:
+
+            city_hotels = pd.DataFrame()
+
+        else:
+
+            city_hotels = hotels_df[
+                hotels_df["City"]
+                .astype(str)
+                .str.lower()
+                == city.lower()
+            ]
+
+
+        hotels = []
+
+
+        for _, hotel in city_hotels.iterrows():
+
+            hotels.append({
+
+                "name":
+                    str(hotel["Hotel_Name"]),
+
+                "city":
+                    str(hotel["City"])
+
+            })
+
+
+        return jsonify({
+
+            "success": True,
+
+            "city": city,
+
+            "hotels": hotels
+
+        })
+
+
+    except Exception as e:
+
+        print("Hotels Error:", e)
+
+        return jsonify({
+
+            "success": False,
+
+            "error": "Unable to load hotels"
+
+        }), 500
+
+
+# ============================================================
+# TRANSPORT API
+# ============================================================
+
+@app.route("/api/transport")
+def get_transport():
+
+    source = request.args.get(
+        "source",
+        ""
+    ).strip()
+
+    destination = request.args.get(
+        "destination",
+        ""
+    ).strip()
+
+
+    if not destination:
+
+        return jsonify({
+
+            "success": False,
+
+            "error": "Please enter destination city"
+
+        }), 400
+
+
+    # ========================================================
+    # TRANSPORT OPTIONS
+    # ========================================================
+
+    transport = [
+
+        {
+            "type": "Bus",
+
+            "icon": "🚌",
+
+            "description":
+                f"Bus services are available from "
+                f"{source or 'your city'} to "
+                f"{destination}."
+        },
+
+        {
+            "type": "Train",
+
+            "icon": "🚆",
+
+            "description":
+                f"Train services are available between "
+                f"{source or 'your city'} and "
+                f"{destination}."
+        },
+
+        {
+            "type": "Flight",
+
+            "icon": "✈️",
+
+            "description":
+                f"Flights may be available from "
+                f"{source or 'your city'} to "
+                f"{destination}."
+        },
+
+        {
+            "type": "Taxi / Cab",
+
+            "icon": "🚕",
+
+            "description":
+                f"Taxi and cab services are available "
+                f"for travel to {destination}."
+        }
+
+    ]
+
+
+    return jsonify({
+
+        "success": True,
+
+        "source": source,
+
+        "destination": destination,
+
+        "transport": transport
+
+    })
+
+
+# ============================================================
+# START FLASK SERVER
+# ============================================================
 
 if __name__ == "__main__":
-    app.run(debug=True)
+
+    app.run(
+        debug=True
+    )
+    

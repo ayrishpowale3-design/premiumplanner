@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Trip Sharing | Premium Travel Planner</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .sharing-container {
+            max-width: 700px;
+            margin: 60px auto;
+            padding: 35px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .sharing-container h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .sharing-container > p {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sharing-container label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .sharing-container textarea {
+            width: 100%;
+            height: 180px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            resize: vertical;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+        }
+
+        .share-btn,
+        .copy-btn {
+            width: 100%;
+            margin-top: 15px;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .share-btn {
+            background: #0099ff;
+        }
+
+        .share-btn:hover {
+            background: #007acc;
+        }
+
+        .copy-btn {
+            background: #444;
+        }
+
+        .copy-btn:hover {
+            background: #222;
+        }
+
+        #shareMessage {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        #shareResult {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f4f9ff;
+            border-radius: 15px;
+            display: none;
+        }
+
+        #shareResult h3 {
+            margin-top: 0;
+        }
+
+        .share-link-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .share-link-box input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .share-link-box button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #444;
+            color: white;
+            cursor: pointer;
+        }
+
+        #sharedTrip {
+            max-width: 700px;
+            margin: 30px auto;
+        }
+
+        .shared-trip-card {
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .shared-trip-card h2 {
+            margin-top: 0;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+
+            .sharing-container {
+                margin: 30px 15px;
+                padding: 25px;
+            }
+
+            .share-link-box {
+                flex-direction: column;
+            }
+
+            .share-link-box button {
+                width: 100%;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <h2>🌍 Premium Travel Planner</h2>
+
+        <ul>
+
+            <li>
+                <a href="home.html">Home</a>
+            </li>
+
+            <li>
+                <a href="plantrip.html">Plan Trip</a>
+            </li>
+
+            <li>
+                <a href="mytrips.html">📁 My Trips</a>
+            </li>
+
+            <li>
+                <a href="about.html">About</a>
+            </li>
+
+            <li>
+                <a href="contact.html">Contact</a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+    <!-- TRIP SHARING -->
+
+    <div class="sharing-container">
+
+        <h1>👥 Share Your Trip</h1>
+
+        <p>
+            Create a shareable link for your generated trip.
+        </p>
+
+
+        <label for="tripMessage">
+            Trip Details
+        </label>
+
+        <textarea
+            id="tripMessage"
+            placeholder="Your trip details will appear here if available.
+
+Example:
+
+Mumbai → Goa
+
+5 Days Trip
+
+Hotel: ₹8,000
+Transport: ₹5,000
+Activities: ₹3,000
+
+Total Budget: ₹16,000"></textarea>
+
+
+        <button
+            class="share-btn"
+            onclick="generateShareLink()">
+            🔗 Generate Share Link
+        </button>
+
+
+        <button
+            class="copy-btn"
+            onclick="copyTripDetails()">
+            📋 Copy Trip Details
+        </button>
+
+
+        <p id="shareMessage"></p>
+
+
+        <!-- GENERATED LINK -->
+
+        <div id="shareResult">
+
+            <h3>✅ Trip Shared Successfully!</h3>
+
+            <p>
+                Copy this link and send it to your friends or family:
+            </p>
+
+            <div class="share-link-box">
+
+                <input
+                    type="text"
+                    id="shareLink"
+                    readonly
+                >
+
+                <button onclick="copyShareLink()">
+                    📋 Copy Link
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SHARED TRIP DISPLAY -->
+
+    <div id="sharedTrip"></div>
+
+
+    <script>
+
+        // ==========================================
+        // LOAD TRIP DETAILS FROM LOCAL STORAGE
+        // ==========================================
+
+        function loadTripDetails() {
+
+            const tripData =
+                JSON.parse(localStorage.getItem("tripData"));
+
+            if (!tripData) {
+                return;
+            }
+
+            let text = "";
+
+            if (tripData.source || tripData.destination) {
+
+                text +=
+                    (tripData.source || "") +
+                    " → " +
+                    (tripData.destination || "") +
+                    "\n\n";
+            }
+
+            if (tripData.startDate || tripData.endDate) {
+
+                text +=
+                    "📅 " +
+                    (tripData.startDate || "") +
+                    " → " +
+                    (tripData.endDate || "") +
+                    "\n\n";
+            }
+
+            if (tripData.travellers) {
+
+                text +=
+                    "👥 Travellers: " +
+                    tripData.travellers +
+                    "\n";
+            }
+
+            if (tripData.budget) {
+
+                text +=
+                    "💰 Budget: ₹" +
+                    tripData.budget +
+                    "\n";
+            }
+
+            if (tripData.interest) {
+
+                text +=
+                    "🎯 Interest: " +
+                    tripData.interest +
+                    "\n";
+            }
+
+            if (tripData.transport) {
+
+                text +=
+                    "🚌 Transport: " +
+                    tripData.transport +
+                    "\n";
+            }
+
+            if (tripData.hotel) {
+
+                text +=
+                    "🏨 Hotel: " +
+                    tripData.hotel +
+                    "\n";
+            }
+
+            if (tripData.places && tripData.places.length > 0) {
+
+                text += "\n📍 Attractions:\n";
+
+                tripData.places.forEach(function(place) {
+
+                    text +=
+                        "• " +
+                        place +
+                        "\n";
+
+                });
+            }
+
+            if (tripData.hotels && tripData.hotels.length > 0) {
+
+                text += "\n🏨 Hotels:\n";
+
+                tripData.hotels.forEach(function(hotel) {
+
+                    text +=
+                        "• " +
+                        hotel +
+                        "\n";
+
+                });
+            }
+
+            document.getElementById("tripMessage").value =
+                text.trim();
+        }
+
+
+        // ==========================================
+        // GENERATE SHARE LINK
+        // ==========================================
+
+        async function generateShareLink() {
+
+            const tripData =
+                JSON.parse(localStorage.getItem("tripData"));
+
+            if (!tripData) {
+
+                alert(
+                    "No trip found. Please generate a trip first from Plan Trip."
+                );
+
+                return;
+            }
+
+            const message =
+                document.getElementById("tripMessage").value.trim();
+
+            if (!message) {
+
+                alert(
+                    "No trip details available."
+                );
+
+                return;
+            }
+
+
+            const shareMessage =
+                document.getElementById("shareMessage");
+
+            shareMessage.innerText =
+                "⏳ Creating sharing link...";
+
+
+            try {
+
+                const response =
+                    await fetch("/api/share-trip", {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify(tripData)
+
+                    });
+
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok || !result.success) {
+
+                    throw new Error(
+                        result.error ||
+                        "Unable to create sharing link."
+                    );
+
+                }
+
+
+                const fullLink =
+                    window.location.origin +
+                    result.share_url;
+
+
+                document.getElementById("shareLink").value =
+                    fullLink;
+
+
+                document.getElementById("shareResult").style.display =
+                    "block";
+
+
+                shareMessage.innerText =
+                    "✅ Sharing link created successfully!";
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                shareMessage.innerText =
+                    "❌ Unable to create sharing link.";
+
+                alert(error.message);
+
+            }
+
+        }
+
+
+        // ==========================================
+        // COPY TRIP DETAILS
+        // ==========================================
+
+        async function copyTripDetails() {
+
+            const message =
+                document.getElementById("tripMessage").value.trim();
+
+
+            if (!message) {
+
+                alert(
+                    "There are no trip details to copy."
+                );
+
+                return;
+            }
+
+
+            try {
+
+                await navigator.clipboard.writeText(message);
+
+                document.getElementById("shareMessage").innerText =
+                    "✅ Trip details copied!";
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Unable to copy trip details."
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // COPY SHARE LINK
+        // ==========================================
+
+        async function copyShareLink() {
+
+            const link =
+                document.getElementById("shareLink").value;
+
+
+            if (!link) {
+                return;
+            }
+
+
+            try {
+
+                await navigator.clipboard.writeText(link);
+
+                document.getElementById("shareMessage").innerText =
+                    "✅ Share link copied!";
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Unable to copy link."
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // LOAD SHARED TRIP
+        // ==========================================
+
+        async function loadSharedTrip() {
+
+            const params =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+
+            const code =
+                params.get("code");
+
+
+            if (!code) {
+                return;
+            }
+
+
+            const sharedTrip =
+                document.getElementById("sharedTrip");
+
+
+            sharedTrip.innerHTML =
+                "<p style='text-align:center;'>⏳ Loading shared trip...</p>";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/shared-trip/" +
+                        encodeURIComponent(code)
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok || !result.success) {
+
+                    sharedTrip.innerHTML =
+                        "<p class='error-message'>❌ Shared trip not found.</p>";
+
+                    return;
+                }
+
+
+                const trip =
+                    result.trip;
+
+
+                sharedTrip.innerHTML = `
+
+                    <div class="shared-trip-card">
+
+                        <h2>
+                            ✈️
+                            ${trip.source || ""}
+                            →
+                            ${trip.destination || ""}
+                        </h2>
+
+                        <p>
+                            📅 <strong>Start Date:</strong>
+                            ${trip.startDate || "Not specified"}
+                        </p>
+
+                        <p>
+                            📅 <strong>End Date:</strong>
+                            ${trip.endDate || "Not specified"}
+                        </p>
+
+                        <p>
+                            👥 <strong>Travellers:</strong>
+                            ${trip.travellers || "Not specified"}
+                        </p>
+
+                        <p>
+                            💰 <strong>Budget:</strong>
+                            ₹${trip.budget || "0"}
+                        </p>
+
+                        <p>
+                            🎯 <strong>Interest:</strong>
+                            ${trip.interest || "Not specified"}
+                        </p>
+
+                        <p>
+                            🚌 <strong>Transport:</strong>
+                            ${trip.transport || "Not specified"}
+                        </p>
+
+                        <p>
+                            🏨 <strong>Hotel:</strong>
+                            ${trip.hotel || "Not specified"}
+                        </p>
+
+                    </div>
+
+                `;
+
+            } catch (error) {
+
+                console.error(error);
+
+                sharedTrip.innerHTML =
+                    "<p class='error-message'>❌ Unable to connect to the server.</p>";
+
+            }
+
+        }
+
+
+        // ==========================================
+        // PAGE LOAD
+        // ==========================================
+
+        window.addEventListener("load", function() {
+
+            loadTripDetails();
+
+            loadSharedTrip();
+
+        });
+
+    </script>
+
+</body>
+
+</html>

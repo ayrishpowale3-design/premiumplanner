@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Hotels | Premium Travel Planner</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .page-container {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .search-box {
+      margin: 30px 0;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .search-box input {
+      padding: 14px;
+      width: 60%;
+      min-width: 250px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .search-box button {
+      padding: 14px 25px;
+      border: none;
+      border-radius: 10px;
+      background: #2196f3;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .search-box button:hover {
+      background: #1976d2;
+    }
+
+    #results {
+      margin-top: 30px;
+      text-align: left;
+    }
+
+    .result-card {
+      padding: 20px;
+      margin: 15px 0;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .result-card h3 {
+      margin-top: 0;
+      color: #2196f3;
+    }
+
+    .loading {
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .error {
+      text-align: center;
+      color: red;
+    }
+
+    .no-results {
+      text-align: center;
+      font-size: 18px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+
+    <h2>🌍 Premium Travel Planner</h2>
+
+    <ul>
+      <li>
+        <a href="home.html">Home</a>
+      </li>
+
+      <li>
+        <a href="plantrip.html">Plan Trip</a>
+      </li>
+
+      <li>
+        <a href="mytrips.html">📁 My Trips</a>
+      </li>
+
+      <li>
+        <a href="about.html">About</a>
+      </li>
+
+      <li>
+        <a href="contact.html">Contact</a>
+      </li>
+    </ul>
+
+  </nav>
+
+
+  <!-- PAGE -->
+  <div class="page-container">
+
+    <h1>🏨 Hotels</h1>
+
+    <p>Find hotels for your destination.</p>
+
+
+    <!-- SEARCH -->
+    <div class="search-box">
+
+      <input
+        id="city"
+        type="text"
+        placeholder="Enter city e.g. Mumbai"
+        onkeydown="if(event.key === 'Enter') findHotels()"
+      >
+
+      <button onclick="findHotels()">
+        🔍 Search
+      </button>
+
+    </div>
+
+
+    <!-- RESULTS -->
+    <div id="results"></div>
+
+  </div>
+
+
+  <script>
+
+    async function findHotels() {
+
+      const cityInput = document.getElementById("city");
+      const results = document.getElementById("results");
+
+      const city = cityInput.value.trim();
+
+
+      // Check city
+      if (!city) {
+
+        alert("Please enter a city.");
+
+        cityInput.focus();
+
+        return;
+      }
+
+
+      // Loading message
+      results.innerHTML = `
+        <div class="loading">
+          ⏳ Loading hotels...
+        </div>
+      `;
+
+
+      try {
+
+        const response = await fetch(
+          "/api/hotels?city=" + encodeURIComponent(city)
+        );
+
+
+        // Check HTTP response
+        if (!response.ok) {
+
+          throw new Error(
+            "Server returned status " + response.status
+          );
+
+        }
+
+
+        const data = await response.json();
+
+
+        console.log("Hotels API response:", data);
+
+
+        // Clear previous results
+        results.innerHTML = "";
+
+
+        // Backend error
+        if (data.success === false) {
+
+          results.innerHTML = `
+            <div class="error">
+              ❌ ${data.error || "Unable to load hotels."}
+            </div>
+          `;
+
+          return;
+        }
+
+
+        // No hotels
+        if (!data.hotels || data.hotels.length === 0) {
+
+          results.innerHTML = `
+            <div class="no-results">
+              😔 No hotels found for <strong>${city}</strong>.
+            </div>
+          `;
+
+          return;
+        }
+
+
+        // Display hotels
+        data.hotels.forEach(function(hotel) {
+
+          results.innerHTML += `
+
+            <div class="result-card">
+
+              <h3>🏨 ${hotel.name}</h3>
+
+              <p>
+                📍 ${hotel.city || city}
+              </p>
+
+            </div>
+
+          `;
+
+        });
+
+      }
+
+      catch (error) {
+
+        console.error("Hotels Error:", error);
+
+        results.innerHTML = `
+          <div class="error">
+
+            ❌ Unable to load hotels.
+
+            <br><br>
+
+            Please make sure the Flask backend is running.
+
+          </div>
+        `;
+
+      }
+
+    }
+
+  </script>
+
+</body>
+</html>

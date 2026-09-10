@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Budget Calculator | Premium Travel Planner</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        .budget-container {
+            max-width: 700px;
+            margin: 60px auto;
+            padding: 35px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .budget-container h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .budget-description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .budget-group {
+            margin-bottom: 20px;
+        }
+
+        .budget-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .budget-group input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #2196f3;
+            color: white;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .calculate-btn:hover {
+            opacity: 0.9;
+        }
+
+        .budget-result {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f4f9ff;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .budget-result h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .budget-result p {
+            font-size: 17px;
+            margin: 12px 0;
+        }
+
+        .total {
+            font-size: 24px !important;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .error {
+            margin-top: 20px;
+            text-align: center;
+            color: #d32f2f;
+        }
+
+        .loading {
+            margin-top: 20px;
+            text-align: center;
+            color: #555;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+    <h2>🌍 Premium Travel Planner</h2>
+
+    <ul>
+
+        <li>
+            <a href="home.html">Home</a>
+        </li>
+
+        <li>
+            <a href="plantrip.html">Plan Trip</a>
+        </li>
+
+        <li>
+            <a href="mytrips.html">📁 My Trips</a>
+        </li>
+
+        <li>
+            <a href="about.html">About</a>
+        </li>
+
+        <li>
+            <a href="contact.html">Contact</a>
+        </li>
+
+    </ul>
+
+</nav>
+
+
+<!-- BUDGET CALCULATOR -->
+
+<div class="budget-container">
+
+    <h1>💰 Trip Budget Calculator</h1>
+
+    <p class="budget-description">
+        Calculate the estimated total cost of your trip.
+    </p>
+
+
+    <!-- HOTEL -->
+
+    <div class="budget-group">
+
+        <label for="hotelCost">
+            🏨 Hotel Cost (₹)
+        </label>
+
+        <input
+            type="number"
+            id="hotelCost"
+            min="0"
+            placeholder="Enter hotel cost"
+        >
+
+    </div>
+
+
+    <!-- FOOD -->
+
+    <div class="budget-group">
+
+        <label for="foodCost">
+            🍽️ Food Cost (₹)
+        </label>
+
+        <input
+            type="number"
+            id="foodCost"
+            min="0"
+            placeholder="Enter food cost"
+        >
+
+    </div>
+
+
+    <!-- TRANSPORT -->
+
+    <div class="budget-group">
+
+        <label for="transportCost">
+            🚌 Transport Cost (₹)
+        </label>
+
+        <input
+            type="number"
+            id="transportCost"
+            min="0"
+            placeholder="Enter transport cost"
+        >
+
+    </div>
+
+
+    <!-- SIGHTSEEING -->
+
+    <div class="budget-group">
+
+        <label for="sightseeingCost">
+            🎟️ Sightseeing & Activities (₹)
+        </label>
+
+        <input
+            type="number"
+            id="sightseeingCost"
+            min="0"
+            placeholder="Enter sightseeing cost"
+        >
+
+    </div>
+
+
+    <!-- SHOPPING -->
+
+    <div class="budget-group">
+
+        <label for="shoppingCost">
+            🛍️ Shopping (₹)
+        </label>
+
+        <input
+            type="number"
+            id="shoppingCost"
+            min="0"
+            placeholder="Enter shopping cost"
+        >
+
+    </div>
+
+
+    <!-- OTHER -->
+
+    <div class="budget-group">
+
+        <label for="otherCost">
+            💳 Other Expenses (₹)
+        </label>
+
+        <input
+            type="number"
+            id="otherCost"
+            min="0"
+            placeholder="Enter other expenses"
+        >
+
+    </div>
+
+
+    <!-- BUTTON -->
+
+    <button
+        class="calculate-btn"
+        onclick="calculateBudget()"
+    >
+        💰 Calculate Budget
+    </button>
+
+
+    <!-- STATUS -->
+
+    <div id="status"></div>
+
+
+    <!-- RESULT -->
+
+    <div
+        class="budget-result"
+        id="budgetResult"
+    >
+
+        <h2>📊 Your Trip Budget</h2>
+
+
+        <p>
+            🏨 Hotel:
+            ₹<span id="hotelResult">0</span>
+        </p>
+
+
+        <p>
+            🍽️ Food:
+            ₹<span id="foodResult">0</span>
+        </p>
+
+
+        <p>
+            🚌 Transport:
+            ₹<span id="transportResult">0</span>
+        </p>
+
+
+        <p>
+            🎟️ Sightseeing:
+            ₹<span id="sightseeingResult">0</span>
+        </p>
+
+
+        <p>
+            🛍️ Shopping:
+            ₹<span id="shoppingResult">0</span>
+        </p>
+
+
+        <p>
+            💳 Other:
+            ₹<span id="otherResult">0</span>
+        </p>
+
+
+        <hr>
+
+
+        <p class="total">
+            💰 Total:
+            ₹<span id="totalResult">0</span>
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+async function calculateBudget() {
+
+    const hotel =
+        Number(document.getElementById("hotelCost").value) || 0;
+
+    const food =
+        Number(document.getElementById("foodCost").value) || 0;
+
+    const transport =
+        Number(document.getElementById("transportCost").value) || 0;
+
+    const sightseeing =
+        Number(document.getElementById("sightseeingCost").value) || 0;
+
+    const shopping =
+        Number(document.getElementById("shoppingCost").value) || 0;
+
+    const other =
+        Number(document.getElementById("otherCost").value) || 0;
+
+
+    const status =
+        document.getElementById("status");
+
+    const resultBox =
+        document.getElementById("budgetResult");
+
+
+    // Loading
+
+    status.innerHTML =
+        '<p class="loading">🔄 Calculating your budget...</p>';
+
+    resultBox.style.display = "none";
+
+
+    try {
+
+        const response = await fetch(
+            "/api/budget",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    hotel: hotel,
+
+                    food: food,
+
+                    transport: transport,
+
+                    sightseeing: sightseeing,
+
+                    shopping: shopping,
+
+                    other: other
+
+                })
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        // Backend error
+
+        if (!response.ok || data.success === false) {
+
+            status.innerHTML =
+                '<p class="error">' +
+                "❌ " +
+                (data.error || "Unable to calculate budget.") +
+                "</p>";
+
+            return;
+
+        }
+
+
+        // Clear status
+
+        status.innerHTML = "";
+
+
+        // Display returned values
+
+        document.getElementById("hotelResult")
+            .innerText =
+            Number(data.hotel || 0).toLocaleString("en-IN");
+
+
+        document.getElementById("foodResult")
+            .innerText =
+            Number(data.food || 0).toLocaleString("en-IN");
+
+
+        document.getElementById("transportResult")
+            .innerText =
+            Number(data.transport || 0).toLocaleString("en-IN");
+
+
+        document.getElementById("sightseeingResult")
+            .innerText =
+            Number(data.sightseeing || 0).toLocaleString("en-IN");
+
+
+        document.getElementById("shoppingResult")
+            .innerText =
+            Number(data.shopping || 0).toLocaleString("en-IN");
+
+
+        document.getElementById("otherResult")
+            .innerText =
+            Number(data.other || 0).toLocaleString("en-IN");
+
+
+        document.getElementById("totalResult")
+            .innerText =
+            Number(data.total || 0).toLocaleString("en-IN");
+
+
+        // Show result
+
+        resultBox.style.display = "block";
+
+    }
+
+
+    catch (error) {
+
+        console.error("Budget Error:", error);
+
+        status.innerHTML =
+            '<p class="error">' +
+            "❌ Unable to connect to backend. " +
+            "Please make sure Flask is running." +
+            "</p>";
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>
