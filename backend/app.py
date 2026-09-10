@@ -1294,6 +1294,51 @@ def get_transport():
 
     })
 
+# ============================================================
+# BUDGET CALCULATOR API
+# ============================================================
+
+@app.route("/api/budget", methods=["POST"])
+def calculate_budget():
+
+    data = request.get_json() or {}
+
+    try:
+        hotel = float(data.get("hotel", 0))
+        food = float(data.get("food", 0))
+        transport = float(data.get("transport", 0))
+        sightseeing = float(data.get("sightseeing", 0))
+        shopping = float(data.get("shopping", 0))
+        other = float(data.get("other", 0))
+
+        total = (
+            hotel +
+            food +
+            transport +
+            sightseeing +
+            shopping +
+            other
+        )
+
+        return jsonify({
+            "success": True,
+            "hotel": hotel,
+            "food": food,
+            "transport": transport,
+            "sightseeing": sightseeing,
+            "shopping": shopping,
+            "other": other,
+            "total": total
+        })
+
+    except Exception as e:
+
+        print("Budget Error:", e)
+
+        return jsonify({
+            "success": False,
+            "error": "Invalid budget values"
+        }), 400
 
 # ============================================================
 # START FLASK SERVER
